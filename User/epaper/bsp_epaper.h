@@ -6,12 +6,12 @@
 
 /* 定义Epaper连接的GPIO端口 */
 /*
-* BUSY ->   PB1
-* RST  ->   PB0
-* DC   ->   PA7
-* CS   ->   PA6
-* SCK  ->   PA5
-* SDI  ->   PA4
+* BUSY 	---->   PB1
+* RST 	---->   PB0
+* DC   	---->   PA7
+* CS  	---->   PA6
+* SCK  	---->   PA5
+* SDI  	---->   PA4
 */
 
 #define BUSY_GPIO_PORT    	GPIOB

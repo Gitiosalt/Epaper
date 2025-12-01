@@ -37,10 +37,6 @@ void LED_GPIO_Config(void)
 		/* πÿ±’À˘”–ledµ∆	*/
 		GPIO_ResetBits(LED1_GPIO_PORT, LED1_GPIO_PIN);
 		GPIO_ResetBits(LED2_GPIO_PORT, LED2_GPIO_PIN);	 
-
-    
-    
-
 }
 
 /*********************************************END OF FILE**********************/

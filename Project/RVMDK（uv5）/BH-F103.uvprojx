@@ -325,7 +325,7 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>0</v6Lang>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_MD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\led;..\..\FreeRTOS\port\RVDS\ARM_CM3;..\..\FreeRTOS\include;..\..\User\EPD_W21;..\..\User\epaper</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS;..\..\User;..\..\Libraries\FWlib\inc;..\..\User\led;..\..\FreeRTOS\port\RVDS\ARM_CM3;..\..\FreeRTOS\include;..\..\User\EPD_W21;..\..\User\epaper;..\..\User\ds1302;..\..\User\SysTick</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -587,6 +587,16 @@
               <FileName>bsp_epaper.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\epaper\bsp_epaper.c</FilePath>
+            </File>
+            <File>
+              <FileName>ds1302.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\ds1302\ds1302.c</FilePath>
+            </File>
+            <File>
+              <FileName>bsp_SysTick.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\SysTick\bsp_SysTick.c</FilePath>
             </File>
           </Files>
         </Group>

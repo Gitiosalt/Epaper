@@ -30,6 +30,8 @@
 "..\..\output\bsp_led.o"
 "..\..\output\epaper.o"
 "..\..\output\bsp_epaper.o"
+"..\..\output\ds1302.o"
+"..\..\output\bsp_systick.o"
 "..\..\output\croutine.o"
 "..\..\output\event_groups.o"
 "..\..\output\list.o"
