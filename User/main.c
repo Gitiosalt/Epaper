@@ -50,7 +50,7 @@ int main(void)
 	LED_GPIO_Config();	 
 	EPAPER_GPIO_Config();
 	DS1302_Init();
-	DS1302_SetTime();
+//	DS1302_SetTime();
 
 	LED2_ON;
 	
@@ -64,8 +64,8 @@ int main(void)
 	while(1)
 	{
 		DS1302_GetTime();
-		second_l = Time[SECOND] % 10;
-		second_h = Time[SECOND] / 10;
+//		second_l = Time[SECOND] % 10;
+//		second_h = Time[SECOND] / 10;
 		
 		minute_l = Time[MINUTE] % 10;
 		minute_h = Time[MINUTE] / 10;
@@ -74,12 +74,24 @@ int main(void)
 		hour_h = Time[HOUR] / 10;
 		
 		EPD_HW_Init();
+		
+		if (hour_l >= 0 && hour_l <= 9) {
+			EPD_Dis_Part(120, 32, num_image_arr[hour_l],33, 64, POS);
+		}
+		if (hour_h >= 0 && hour_h <= 9) {
+			EPD_Dis_Part(75, 32,num_image_arr[hour_h],33, 64, POS);
+		}
+		
+		EPD_Dis_Part(160,55,gImage_DOT,8,8,POS);	
+		EPD_Dis_Part(160,77,gImage_DOT,8,8,POS);	
+		
 		if (minute_l >= 0 && minute_l <= 9) {
-			EPD_Dis_Part(120, 32, num_image_arr[minute_l],33, 64, POS);
+			EPD_Dis_Part(221,32, num_image_arr[minute_l],33, 64, POS);
 		}
 		if (minute_h >= 0 && minute_h <= 9) {
-			EPD_Dis_Part(75, 32,num_image_arr[minute_h],33, 64, POS);
+			EPD_Dis_Part(175,32,num_image_arr[minute_h],33, 64, POS);
 		}
+		
 		EPD_Part_Update_and_DeepSleep();
 		driver_delay_xms(60000);
 	}
