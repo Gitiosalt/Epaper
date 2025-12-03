@@ -34,17 +34,17 @@ compiling main.c...
   #define OFF 3 
 ..\..\User\ds1302\ds1302.h(89): warning:  #1-D: last line of file ends without a newline
   #endif
-..\..\User\main.c(94): warning:  #111-D: statement is unreachable
-  	taskENTER_CRITICAL();
-..\..\User\main.c(44): warning:  #177-D: variable "second_l"  was declared but never referenced
+..\..\User\main.c(98): warning:  #111-D: statement is unreachable
+  	EPD_HW_Init(); 												
+..\..\User\main.c(55): warning:  #177-D: variable "second_l"  was declared but never referenced
   	int second_l , second_h ,minute_l , minute_h , hour_l , hour_h= 0;
-..\..\User\main.c(44): warning:  #177-D: variable "second_h"  was declared but never referenced
+..\..\User\main.c(55): warning:  #177-D: variable "second_h"  was declared but never referenced
   	int second_l , second_h ,minute_l , minute_h , hour_l , hour_h= 0;
-..\..\User\main.c(111): warning:  #550-D: variable "xReturn"  was set but never used
+..\..\User\main.c(112): warning:  #550-D: variable "xReturn"  was set but never used
   	portBASE_TYPE xReturn = pdPASS;
 ..\..\User\main.c: 7 warnings, 0 errors
 linking...
-Program Size: Code=18878 RO-data=47346 RW-data=224 ZI-data=10080  
+Program Size: Code=18670 RO-data=47346 RW-data=224 ZI-data=10080  
 FromELF: creating hex file...
 "..\..\Output\Á÷Ë®µÆ.axf" - 0 Error(s), 7 Warning(s).
 
@@ -59,7 +59,7 @@ Package Vendor: Keil
   C:\Users\yjc\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>

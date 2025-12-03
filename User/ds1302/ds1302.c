@@ -6,6 +6,7 @@
  */
 #include "ds1302.h"
 
+
 /**
  * DS1302 引脚连接方式
  * 
@@ -19,7 +20,21 @@
 // 时间参数 秒、分、时、日、月、星期、年
 int8_t Time[TIME_SUM] = {10, 45, 22, 19, 12, 7, 25};
  
- 
+static void Delay_us(uint16_t us)
+{
+    uint32_t ticks = 0;
+    uint32_t reload = SysTick->LOAD; 
+    ticks = us * (SystemCoreClock / 1000000); 
+    SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
+    while(ticks--)
+    {
+        __NOP(); 
+    }
+    SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk; 
+} 
+
+
+
 /**
  * @brief DS1302初始化
  * @param  void 无
@@ -94,8 +109,8 @@ void DS1302_WriteData(uint8_t cmd, uint8_t data)
 //	DS1302_SetMode(OUTPUT_MODE);
     // 1. RST拉高，准备写入
     DS1302_RST_HIGH();
-//    Delay_us(3);
-	SysTick_Delay_Us(1);
+    Delay_us(3);
+	
     // 2. 开始写命令
     for (uint8_t i = 0; i < 8; i++)
     {
@@ -109,18 +124,18 @@ void DS1302_WriteData(uint8_t cmd, uint8_t data)
             DS1302_DAT_LOW();
         }
         cmd >>= 1;
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
  
         // 2.2 CLK拉高，等待接收
         DS1302_CLK_HIGH();
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
  
         // 2.3 CLK拉低
         DS1302_CLK_LOW();
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
     }
  
     // 3. 开始写数据
@@ -136,18 +151,18 @@ void DS1302_WriteData(uint8_t cmd, uint8_t data)
             DS1302_DAT_LOW();
         }
         data >>= 1;
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
  
         // 3.2 CLK拉高，等待接收
         DS1302_CLK_HIGH();
-//        Delay_us(1);
- 		SysTick_Delay_Us(1);
+        Delay_us(1);
+ 		
 		
         // 3.3 CLK拉低
         DS1302_CLK_LOW();
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
     }
  
     // 4. RST拉低，复位
@@ -169,8 +184,8 @@ uint8_t DS1302_ReadData(uint8_t cmd)
  
     // 1. 拉高RST
     DS1302_RST_HIGH();
-//    Delay_us(3);
-	SysTick_Delay_Us(3);
+    Delay_us(3);
+
     // 2. 开始写命令
     for (uint8_t i = 0; i < 8; i++)
     {
@@ -184,22 +199,22 @@ uint8_t DS1302_ReadData(uint8_t cmd)
             DS1302_DAT_LOW();
         }
         cmd >>= 1;
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
         // 2.2 CLK拉高，等待接收
         DS1302_CLK_HIGH();
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
         // 2.3 CLK拉低
         DS1302_CLK_LOW();
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
     }
  
     // 3. 开始读取数据 低位先行
     DS1302_SetMode(INPUT_MODE);
-//    Delay_us(5);
-	SysTick_Delay_Us(5);
+    Delay_us(5);
+
     for (uint8_t i = 0; i < 8; i++)
     {
         if (DS1302_READ_DAT)
@@ -213,12 +228,12 @@ uint8_t DS1302_ReadData(uint8_t cmd)
  
         // 3.1 CLK拉高
         DS1302_CLK_HIGH();
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
         // 3.2 CLK拉低，开始数据读取
         DS1302_CLK_LOW();
-//        Delay_us(1);
-		SysTick_Delay_Us(1);
+        Delay_us(1);
+		
     }
     
     // 4. RST拉低，DAT置0
