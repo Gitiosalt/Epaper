@@ -18,7 +18,7 @@
 
  
 // 时间参数 秒、分、时、日、月、星期、年
-int8_t Time[TIME_SUM] = {10, 45, 22, 19, 12, 7, 25};
+int8_t Time[TIME_SUM] = {5, 40, 16, 4, 12, 4, 25};
  
 static void Delay_us(uint16_t us)
 {
@@ -106,7 +106,7 @@ static void DS1302_SetMode(IO_MODE mode)
  */
 void DS1302_WriteData(uint8_t cmd, uint8_t data)
 {
-//	DS1302_SetMode(OUTPUT_MODE);
+	DS1302_SetMode(OUTPUT_MODE);
     // 1. RST拉高，准备写入
     DS1302_RST_HIGH();
     Delay_us(3);

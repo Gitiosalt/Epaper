@@ -39,8 +39,11 @@
 ..\..\output\main.o: ..\..\FreeRTOS\include\mpu_wrappers.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\task.h
 ..\..\output\main.o: ..\..\FreeRTOS\include\list.h
+..\..\output\main.o: ..\..\FreeRTOS\include\semphr.h
+..\..\output\main.o: ..\..\FreeRTOS\include\queue.h
 ..\..\output\main.o: ..\..\User\epaper\bsp_epaper.h
 ..\..\output\main.o: ..\..\User\EPD_W21\epaper.h
 ..\..\output\main.o: ..\..\User\EPD_W21\picture.h
 ..\..\output\main.o: ..\..\User\ds1302\ds1302.h
 ..\..\output\main.o: ..\..\User\SysTick\bsp_SysTick.h
+..\..\output\main.o: ..\..\User\key\bsp_exti.h

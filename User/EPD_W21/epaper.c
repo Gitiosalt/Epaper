@@ -367,7 +367,7 @@ void EPD_WhiteScreen_ALL(const unsigned char *datas)
 void EPD_Update_and_DeepSleep(void)
 {   
   Epaper_Write_Command(0x22); 
-  Epaper_Write_Data(0xFF);   
+  Epaper_Write_Data(0xF7);   
   Epaper_Write_Command(0x20); 
   Epaper_READBUSY();   
 	
@@ -380,7 +380,7 @@ void EPD_Update_and_DeepSleep(void)
 void EPD_Part_Update_and_DeepSleep(void)
 {
 	Epaper_Write_Command(0x22); 
-	Epaper_Write_Data(0xF7);  //FF 
+	Epaper_Write_Data(0xFF);   
 	Epaper_Write_Command(0x20); 
 	Epaper_READBUSY(); 	
 

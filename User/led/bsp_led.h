@@ -7,12 +7,12 @@
 
 /* 定义LED连接的GPIO端口, 用户只需要修改下面的代码即可改变控制的LED引脚 */
 #define LED1_GPIO_PORT    	GPIOA		              /* GPIO端口 */
-#define LED1_GPIO_CLK 	    RCC_APB2Periph_GPIOB		/* GPIO端口时钟 */
+#define LED1_GPIO_CLK 	    RCC_APB2Periph_GPIOA		/* GPIO端口时钟 */
 #define LED1_GPIO_PIN		GPIO_Pin_1			        
 
-#define LED2_GPIO_PORT    	GPIOB			              /* GPIO端口 */
-#define LED2_GPIO_CLK 	    RCC_APB2Periph_GPIOB		/* GPIO端口时钟 */
-#define LED2_GPIO_PIN		GPIO_Pin_2			        
+#define LED2_GPIO_PORT    	GPIOA			              /* GPIO端口 */
+#define LED2_GPIO_CLK 	    RCC_APB2Periph_GPIOA		/* GPIO端口时钟 */
+#define LED2_GPIO_PIN		GPIO_Pin_1			        
 
 	 
 
@@ -43,11 +43,11 @@
 
 
 /* 定义控制IO的宏 */
-#define LED1_TOGGLE		 digitalToggle(LED1_GPIO_PORT,LED1_GPIO_PIN)
+#define LED1_TOGGLE		   digitalToggle(LED1_GPIO_PORT,LED1_GPIO_PIN)
 #define LED1_OFF		   digitalLo(LED1_GPIO_PORT,LED1_GPIO_PIN)
 #define LED1_ON			   digitalHi(LED1_GPIO_PORT,LED1_GPIO_PIN)
 
-#define LED2_TOGGLE		 digitalToggle(LED2_GPIO_PORT,LED2_GPIO_PIN)
+#define LED2_TOGGLE		   digitalToggle(LED2_GPIO_PORT,LED2_GPIO_PIN)
 #define LED2_OFF		   digitalLo(LED2_GPIO_PORT,LED2_GPIO_PIN)
 #define LED2_ON			   digitalHi(LED2_GPIO_PORT,LED2_GPIO_PIN)
 

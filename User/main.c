@@ -16,53 +16,79 @@
 #include "stm32f10x.h"   
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 #include "bsp_led.h"
 #include "bsp_epaper.h"
 #include "epaper.h"
 #include "picture.h"
 #include "ds1302.h"
+#include "bsp_exti.h"
 //#include "bsp_SysTick.h"
 
 ErrorStatus HSEStartUpStatus;
 
 #define APP_CREATE_TASK_PRIO   	 (tskIDLE_PRIORITY + 1)  
-#define CLOCK_TASK_PRIO        	 (tskIDLE_PRIORITY + 2)  
-#define LED_TASK_PRIO        	 (tskIDLE_PRIORITY + 2)  
+#define CLOCK_TASK_PRIO        	 (tskIDLE_PRIORITY + 3)  
+#define LED_TASK_PRIO        	 (tskIDLE_PRIORITY + 3)  
+#define KEY_TASK_PRIO        	 (tskIDLE_PRIORITY + 4)  
 
 #define APP_CREATE_TASK_STACK  	 128
 #define CLOCK_TASK_STACK         256
 #define LED_TASK_STACK        	 128
+#define KEY_TASK_STACK        	 128
 
 static TaskHandle_t App_Create_Task_Handle = NULL;
 static TaskHandle_t Clock_Task_Handle = NULL;
 static TaskHandle_t Led_Task_Handle = NULL;
+static TaskHandle_t Key_Task_Handle = NULL;
+
+SemaphoreHandle_t xKey1Semaphore;
+SemaphoreHandle_t xKey2Semaphore;
+
+BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
 const unsigned char *num_image_arr[] = {
     gImage_num0, gImage_num1, gImage_num2, gImage_num3, gImage_num4,
     gImage_num5, gImage_num6, gImage_num7, gImage_num8, gImage_num9
 };
 
-static void Led_Task(void *arg){
-	while(1){
-		LED2_ON;
-		vTaskDelay(500 / portTICK_PERIOD_MS);
-		LED2_OFF;
-		vTaskDelay(500 / portTICK_PERIOD_MS);
-	}	
+
+void KEY_IRQHandler(void)
+{
+	// KEY1 PB14(Line14)
+    if(EXTI_GetITStatus(EXTI_Line14) != RESET)
+    {
+		if(KEY1_STATE == 0)
+        { 
+			xSemaphoreGiveFromISR(xKey1Semaphore, &xHigherPriorityTaskWoken);			
+        }
+
+        EXTI_ClearITPendingBit(EXTI_Line14);
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken); 
+    }
+
+    // KEY2 PB15(Line15)
+    if(EXTI_GetITStatus(EXTI_Line15) != RESET)
+    {
+		if(KEY2_STATE == 0)
+        { 
+			xSemaphoreGiveFromISR(xKey2Semaphore,&xHigherPriorityTaskWoken);
+        }
+
+        EXTI_ClearITPendingBit(EXTI_Line15);
+		portYIELD_FROM_ISR(xHigherPriorityTaskWoken); 
+    }
 }
+
 
 static void Clock_Task(void *arg){
 	int second_l , second_h ,minute_l , minute_h , hour_l , hour_h= 0;
 	
-	EPD_W21_Init();	
-	EPD_HW_Init(); 		
-	EPD_WhiteScreen_ALL(gImage_1); 					
-
-	vTaskDelay(500 / portTICK_PERIOD_MS);
-	
 	TickType_t xLastWakeTime;
     const TickType_t xPeriod = 60000 / portTICK_PERIOD_MS;  
     xLastWakeTime = xTaskGetTickCount();
+	
+	int pot = 16;
 	
 	while(1)
 	{
@@ -78,17 +104,15 @@ static void Clock_Task(void *arg){
 		hour_l = Time[HOUR] % 10;
 		hour_h = Time[HOUR] / 10;
 		
-		EPD_HW_Init();
-
-		EPD_Dis_Part(120, 32, num_image_arr[hour_l],33, 64, POS);
-		EPD_Dis_Part(75, 32,num_image_arr[hour_h],33, 64, POS);
-
-		EPD_Dis_Part(160,55,gImage_DOT,8,8,POS);	
-		EPD_Dis_Part(160,77,gImage_DOT,8,8,POS);	
+		EPD_W21_Init();
 		
-		EPD_Dis_Part(221,32, num_image_arr[minute_l],33, 64, POS);
-		EPD_Dis_Part(175,32,num_image_arr[minute_h],33, 64, POS);
-
+		EPD_Dis_Part(75-pot, 32,num_image_arr[hour_h],33, 64, POS);	
+		EPD_Dis_Part(120-pot, 32, num_image_arr[hour_l],33, 64, POS);
+		EPD_Dis_Part(160-pot,55,gImage_DOT,8,8,POS);	
+		EPD_Dis_Part(160-pot,77,gImage_DOT,8,8,POS);	
+		EPD_Dis_Part(175-pot,32,num_image_arr[minute_h],33, 64, POS);
+		EPD_Dis_Part(221-pot,32, num_image_arr[minute_l],33, 64, POS);
+		
 		EPD_Part_Update_and_DeepSleep();
 	
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
@@ -97,15 +121,37 @@ static void Clock_Task(void *arg){
 	//Clear screen
 	EPD_HW_Init(); 												
 	EPD_WhiteScreen_White();  
+}
 
+static void Led_Task(void *arg){
+	while(1){
+//		LED1_TOGGLE;
+		vTaskDelay(1500 / portTICK_PERIOD_MS);
+	}	
+}
 
-///////////////////////////////////////////
-	//全屏刷新整张图片（无灰阶）
-	//Full screen refresh
-//	EPD_HW_Init(); 													//Electronic paper initialization
-//	EPD_WhiteScreen_ALL(gImage_1); 					//Refresh the picture in full screen
-//	driver_delay_xms(500);
-////////////////////////////////////////////////////////////////////////	
+void Key_Task(void *pvParameters)
+{
+    while(1)
+    {
+		if(xSemaphoreTake(xKey1Semaphore, portMAX_DELAY) == pdTRUE){
+			vTaskDelay(20 / portTICK_PERIOD_MS);
+			if(KEY1_STATE == 0 )
+			{
+				LED1_TOGGLE;
+			}
+		}
+		
+		if(xSemaphoreTake(xKey2Semaphore, portMAX_DELAY) == pdTRUE){
+			vTaskDelay(20 / portTICK_PERIOD_MS);
+			if(KEY2_STATE == 0 )
+			{
+				LED1_TOGGLE;
+			}
+		}	
+		
+		
+    }
 }
 
 static void AppCreate_Task(void *arg){
@@ -124,16 +170,19 @@ static void AppCreate_Task(void *arg){
 						  (uint16_t )LED_TASK_STACK,                 
 						  (void* )NULL,                   
 						  (UBaseType_t )LED_TASK_PRIO, 
-						  (TaskHandle_t* )&Led_Task_Handle);					  
+						  (TaskHandle_t* )&Led_Task_Handle);	
+
+	xReturn = xTaskCreate((TaskFunction_t)Key_Task,       
+						  (const char* )"Key_Task",       
+						  (uint16_t )KEY_TASK_STACK,                 
+						  (void* )NULL,                   
+						  (UBaseType_t )KEY_TASK_PRIO, 
+						  (TaskHandle_t* )&Key_Task_Handle);							  
 						  
     taskEXIT_CRITICAL();
 								
 	vTaskDelete( App_Create_Task_Handle);
 }
-
-
-
-
 
 /**
   * @brief  主函数
@@ -148,10 +197,39 @@ int main(void)
 	#endif
 //	SysTick_Init();
 	LED_GPIO_Config();	 
+	EXTI_Key_Config(); 
 	EPAPER_GPIO_Config();
 	DS1302_Init();
 //	DS1302_SetTime();
 
+
+///////////////////////////////////////////
+//  全刷方式刷新整张图片（4灰阶）
+//	EPD_HW_Init_4GRAY(); 										//EPD init 4Gray
+//	EPD_WhiteScreen_ALL_4GRAY(gImage_4Gray4); 	
+//    driver_delay_xms(2000);				
+	
+//	//全屏刷新整张图片（无灰阶）
+//	EPD_HW_Init();
+//	EPD_WhiteScreen_ALL(gImage_hust);
+//	driver_delay_xms(2000);
+
+	//全屏刷新刷背景图片
+	EPD_HW_Init(); 
+	EPD_SetRAMValue_BaseMap(gImage_base);  
+	driver_delay_xms(500);
+
+////	//    y         x       显示内容     显示宽度     显示高度     显示模式
+//	EPD_W21_Init();											//hard reset
+//	EPD_Dis_Part(25,104,black_block,4,8,POS);		      //  248        16      电量第二格        4            8				   OFF
+//	EPD_Part_Update_and_DeepSleep();				
+//	driver_delay_xms(500);				
+//	while(1);
+
+	
+	xKey1Semaphore = xSemaphoreCreateBinary();
+	xKey2Semaphore = xSemaphoreCreateBinary();
+	
 	portBASE_TYPE xReturn = pdPASS;
 	xReturn = xTaskCreate((TaskFunction_t)AppCreate_Task,       
 						  (const char* )"AppCreate_Task",       
@@ -167,7 +245,7 @@ int main(void)
 
     while (1)
     {
-        LED2_OFF;
+        LED1_OFF;
     }
 									
 
