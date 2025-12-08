@@ -42,8 +42,7 @@ static TaskHandle_t Clock_Task_Handle = NULL;
 static TaskHandle_t Led_Task_Handle = NULL;
 static TaskHandle_t Key_Task_Handle = NULL;
 
-SemaphoreHandle_t xKey1Semaphore;
-SemaphoreHandle_t xKey2Semaphore;
+QueueHandle_t xKeyEventQueue;
 
 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
@@ -52,17 +51,23 @@ const unsigned char *num_image_arr[] = {
     gImage_num5, gImage_num6, gImage_num7, gImage_num8, gImage_num9
 };
 
+typedef enum {
+    KEY_NONE = 0,
+    KEY1_PRESS,
+    KEY2_PRESS
+} KeyEvent_t;
 
 void KEY_IRQHandler(void)
 {
+	KeyEvent_t key_event = KEY_NONE;
+	
 	// KEY1 PB14(Line14)
     if(EXTI_GetITStatus(EXTI_Line14) != RESET)
     {
-		if(KEY1_STATE == 0)
-        { 
-			xSemaphoreGiveFromISR(xKey1Semaphore, &xHigherPriorityTaskWoken);			
+		if(KEY1_STATE == 0){ 
+			key_event = KEY1_PRESS;
+			xQueueSendToBackFromISR(xKeyEventQueue ,&key_event ,&xHigherPriorityTaskWoken);
         }
-
         EXTI_ClearITPendingBit(EXTI_Line14);
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken); 
     }
@@ -70,11 +75,10 @@ void KEY_IRQHandler(void)
     // KEY2 PB15(Line15)
     if(EXTI_GetITStatus(EXTI_Line15) != RESET)
     {
-		if(KEY2_STATE == 0)
-        { 
-			xSemaphoreGiveFromISR(xKey2Semaphore,&xHigherPriorityTaskWoken);
+		if(KEY2_STATE == 0){ 
+			key_event = KEY2_PRESS;
+			xQueueSendToBackFromISR(xKeyEventQueue ,&key_event ,&xHigherPriorityTaskWoken);
         }
-
         EXTI_ClearITPendingBit(EXTI_Line15);
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken); 
     }
@@ -132,24 +136,31 @@ static void Led_Task(void *arg){
 
 void Key_Task(void *pvParameters)
 {
+	 KeyEvent_t recv_event;
     while(1)
     {
-		if(xSemaphoreTake(xKey1Semaphore, portMAX_DELAY) == pdTRUE){
+		if(xQueueReceive(xKeyEventQueue, &recv_event, portMAX_DELAY) == pdTRUE){
 			vTaskDelay(20 / portTICK_PERIOD_MS);
-			if(KEY1_STATE == 0 )
-			{
-				LED1_TOGGLE;
-			}
+            switch(recv_event)
+            {
+                case KEY1_PRESS:
+                    if(KEY1_STATE == 0)  
+                    {
+                        LED1_TOGGLE;  // KEY1
+                    }
+                    break;
+
+                case KEY2_PRESS:
+                    if(KEY2_STATE == 0)
+                    {
+                        LED1_TOGGLE;  // KEY2
+                    }
+                    break;
+
+                default:
+                    break;
+            }
 		}
-		
-		if(xSemaphoreTake(xKey2Semaphore, portMAX_DELAY) == pdTRUE){
-			vTaskDelay(20 / portTICK_PERIOD_MS);
-			if(KEY2_STATE == 0 )
-			{
-				LED1_TOGGLE;
-			}
-		}	
-		
 		
     }
 }
@@ -227,8 +238,8 @@ int main(void)
 //	while(1);
 
 	
-	xKey1Semaphore = xSemaphoreCreateBinary();
-	xKey2Semaphore = xSemaphoreCreateBinary();
+	xKeyEventQueue = xQueueCreate( 3 , 1 );
+	xQueueReset( xKeyEventQueue );
 	
 	portBASE_TYPE xReturn = pdPASS;
 	xReturn = xTaskCreate((TaskFunction_t)AppCreate_Task,       
