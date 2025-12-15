@@ -47,3 +47,4 @@
 ..\..\output\main.o: ..\..\User\ds1302\ds1302.h
 ..\..\output\main.o: ..\..\User\SysTick\bsp_SysTick.h
 ..\..\output\main.o: ..\..\User\key\bsp_exti.h
+..\..\output\main.o: E:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

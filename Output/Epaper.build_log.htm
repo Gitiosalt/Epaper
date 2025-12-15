@@ -27,7 +27,22 @@ Project File Date:  12/09/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'E:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Led'
-"..\..\Output\Epaper.axf" - 0 Error(s), 0 Warning(s).
+compiling main.c...
+..\..\User\FreeRTOSConfig.h(175): warning:  #1-D: last line of file ends without a newline
+  #endif /* FREERTOS_CONFIG_H */
+..\..\User\EPD_W21\epaper.h(8): warning:  #47-D: incompatible redefinition of macro "OFF"  (declared at line 47 of "..\..\User\epaper\bsp_epaper.h")
+  #define OFF 3 
+..\..\User\ds1302\ds1302.h(89): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\main.c(810): warning:  #550-D: variable "xReturn"  was set but never used
+      portBASE_TYPE xReturn = pdPASS;
+..\..\User\main.c(898): warning:  #1-D: last line of file ends without a newline
+  /*********************************************END OF FILE**********************/
+..\..\User\main.c: 5 warnings, 0 errors
+linking...
+Program Size: Code=23410 RO-data=56234 RW-data=340 ZI-data=10076  
+FromELF: creating hex file...
+"..\..\Output\Epaper.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -40,7 +55,7 @@ Package Vendor: Keil
   C:\Users\yjc\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
