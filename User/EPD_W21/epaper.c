@@ -386,7 +386,7 @@ void EPD_Part_Update_and_DeepSleep(void)
 
   Epaper_Write_Command(0x10); //enter deep sleep
   Epaper_Write_Data(0x01); 
-  driver_delay_xms(100);	
+  driver_delay_xms(50);	
 }
 
 
