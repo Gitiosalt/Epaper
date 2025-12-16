@@ -564,6 +564,17 @@ static void Menu_Task(void *arg)
 								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
 								EPD_Part_Update_and_DeepSleep();
 								RefreshTimeSetDisplay(); // 显示时间设置界面
+								// 获取当前时间
+								taskENTER_CRITICAL();
+								DS1302_GetTime();
+								g_TimeSetCache.minute = Time[MINUTE];
+								g_TimeSetCache.hour = Time[HOUR];
+								g_TimeSetCache.date = Time[DATE];
+								g_TimeSetCache.month = Time[MONTH];
+								g_TimeSetCache.year = Time[YEAR];
+								g_TimeSetCache.week = Time[WEEK];
+								g_TimeSetCache.sub_state = TIME_SET_MINUTE; // 默认先调整分钟
+								taskEXIT_CRITICAL();
 								break;
 							default:
 								break;
@@ -617,16 +628,6 @@ static void Menu_Task(void *arg)
 
             // 时间设置子菜单
             case MENU_STATE_TIME_SET: 
-				taskENTER_CRITICAL();
-				DS1302_GetTime();
-				g_TimeSetCache.minute = Time[MINUTE];
-				g_TimeSetCache.hour = Time[HOUR];
-				g_TimeSetCache.date = Time[DATE];
-				g_TimeSetCache.month = Time[MONTH];
-				g_TimeSetCache.year = Time[YEAR];
-				g_TimeSetCache.week = Time[WEEK];
-				g_TimeSetCache.sub_state = TIME_SET_MINUTE; // 默认先调整分钟
-				taskEXIT_CRITICAL();
                 switch(g_TimeSetCache.sub_state)
                 {
                     // --------------------- 调整分钟状态 ---------------------
