@@ -110,10 +110,10 @@ typedef enum {
 typedef enum {
     TIME_SET_MINUTE,        // 调整分钟
     TIME_SET_HOUR,          // 调整小时
+	TIME_SET_WEEK,          // 调整星期
     TIME_SET_DATE,          // 调整日期
     TIME_SET_MONTH,         // 调整月份
     TIME_SET_YEAR,          // 调整年份
-    TIME_SET_WEEK,          // 调整星期
     TIME_SET_SAVE_EXIT,     // 保存退出
     TIME_SET_ITEM_MAX       // 枚举边界
 } TimeSetSubState_t;
@@ -154,7 +154,7 @@ TimeSetCache_t g_TimeSetCache; // 全局时间缓存
 #define DISP_MINUTE_Y     40      // 分钟显示Y坐标
 #define DISP_MENU_TITLE_X 15      // 菜单标题X坐标
 
-#define DISP_MENU_X1      220      //保存 X坐标
+#define DISP_MENU_X1      130      //保存 X坐标
 #define DISP_MENU_X2      60    	// 时间 X坐标
 #define DISP_MENU_X3      120     // 壁纸 X坐标
 #define DISP_MENU_X4  	  180      // 设置 X坐标
@@ -163,6 +163,7 @@ TimeSetCache_t g_TimeSetCache; // 全局时间缓存
 #define DISP_MENU_Y2      112     // 时间 Y坐标
 #define DISP_MENU_Y3      112     // 壁纸 Y坐标
 #define DISP_MENU_Y4      112     // 设置 Y坐标
+
 
 // 按键中断服务函数
 void KEY_IRQHandler(void)
@@ -230,6 +231,12 @@ static void Clock_Task(void *arg)
 			
 			// 刷新电子纸显示（使用统一位置宏定义）
 			EPD_W21_Init();
+
+			EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,	32, 16,  OFF);
+			EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 	32, 16,  OFF);
+			EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16,  OFF);
+			EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set, 	32, 16,  OFF);
+		
 			// 年份显示
 			EPD_Dis_Part(DISP_YEAR_X,     DISP_YEAR_Y, num_image_arr[2], 		    12, 16, POS);
 			EPD_Dis_Part(DISP_YEAR_X+9,   DISP_YEAR_Y, num_image_arr[0],			12, 16, POS);
@@ -269,7 +276,7 @@ static void Led_Task(void *arg)
 {
     while(1)
     {
-//        LED1_TOGGLE;
+        LED1_TOGGLE;
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }   
 }
@@ -381,61 +388,49 @@ static void RefreshTimeSetDisplay(void)
     EPD_W21_Init();
     
     // 固定显示：时间设置标题
-    EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-    EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper,  32, 16, POS);
+	EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, OFF);
+	EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, OFF);
+	EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, OFF);
     EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,32, 16, (g_TimeSetCache.sub_state == TIME_SET_SAVE_EXIT) ? NEG : POS);
 
     // 年份显示（根据子状态高亮）
-    EPD_Dis_Part(DISP_YEAR_X,     DISP_YEAR_Y, num_image_arr[2],    12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
-    EPD_Dis_Part(DISP_YEAR_X+9,   DISP_YEAR_Y, num_image_arr[0],12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
-    EPD_Dis_Part(DISP_YEAR_X+18,  DISP_YEAR_Y, num_image_arr[g_TimeSetCache.year/10],      12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
-    EPD_Dis_Part(DISP_YEAR_X+27,  DISP_YEAR_Y, num_image_arr[g_TimeSetCache.year%10],      12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
+    EPD_Dis_Part(DISP_YEAR_X,     DISP_YEAR_Y, num_image_arr[2],    					   12, 16,  (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
+    EPD_Dis_Part(DISP_YEAR_X+9,   DISP_YEAR_Y, num_image_arr[0],						   12, 16,  (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
+    EPD_Dis_Part(DISP_YEAR_X+18,  DISP_YEAR_Y, num_image_arr[g_TimeSetCache.year/10],      12, 16,  (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
+    EPD_Dis_Part(DISP_YEAR_X+27,  DISP_YEAR_Y, num_image_arr[g_TimeSetCache.year%10],      12, 16,  (g_TimeSetCache.sub_state == TIME_SET_YEAR) ? NEG : POS);
     EPD_Dis_Part(DISP_YEAR_X+39,  DISP_YEAR_Y, gImage_year,                 12, 16, POS);
     
     // 月份显示（根据子状态高亮）
-    EPD_Dis_Part(DISP_MONTH_X,    DISP_MONTH_Y, num_image_arr[g_TimeSetCache.month/10],     12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_MONTH) ? NEG : POS);
-    EPD_Dis_Part(DISP_MONTH_X+9,  DISP_MONTH_Y, num_image_arr[g_TimeSetCache.month%10],     12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_MONTH) ? NEG : POS);
+    EPD_Dis_Part(DISP_MONTH_X,    DISP_MONTH_Y, num_image_arr[g_TimeSetCache.month/10],    12, 16, (g_TimeSetCache.sub_state == TIME_SET_MONTH) ? NEG : POS);
+    EPD_Dis_Part(DISP_MONTH_X+9,  DISP_MONTH_Y, num_image_arr[g_TimeSetCache.month%10],    12, 16, (g_TimeSetCache.sub_state == TIME_SET_MONTH) ? NEG : POS);
     EPD_Dis_Part(DISP_MONTH_X+21, DISP_MONTH_Y, gImage_month,                12, 16, POS);
     
     // 日期显示（根据子状态高亮）
-    EPD_Dis_Part(DISP_DATE_X,     DISP_DATE_Y, num_image_arr[g_TimeSetCache.date/10],      12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_DATE) ? NEG : POS);
-    EPD_Dis_Part(DISP_DATE_X+9,   DISP_DATE_Y, num_image_arr[g_TimeSetCache.date%10],      12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_DATE) ? NEG : POS);
+    EPD_Dis_Part(DISP_DATE_X,     DISP_DATE_Y, num_image_arr[g_TimeSetCache.date/10],      12, 16, (g_TimeSetCache.sub_state == TIME_SET_DATE) ? NEG : POS);
+    EPD_Dis_Part(DISP_DATE_X+9,   DISP_DATE_Y, num_image_arr[g_TimeSetCache.date%10],      12, 16, (g_TimeSetCache.sub_state == TIME_SET_DATE) ? NEG : POS);
     EPD_Dis_Part(DISP_DATE_X+21,  DISP_DATE_Y, gImage_date,                 12, 16, POS);
     
     // 星期显示（根据子状态高亮）
     EPD_Dis_Part(DISP_WEEK_X,     DISP_WEEK_Y, gImage_week_h,                12, 16, POS);
     EPD_Dis_Part(DISP_WEEK_X+14,  DISP_WEEK_Y, gImage_week_l,                12, 16, POS);
-    EPD_Dis_Part(DISP_WEEK_X+28,  DISP_WEEK_Y, CHN_image_arr[g_TimeSetCache.week],          12, 16, 
-                 (g_TimeSetCache.sub_state == TIME_SET_WEEK) ? NEG : POS);
+    EPD_Dis_Part(DISP_WEEK_X+28,  DISP_WEEK_Y, CHN_image_arr[g_TimeSetCache.week],         12, 16, (g_TimeSetCache.sub_state == TIME_SET_WEEK) ? NEG : POS);
 
     // 小时显示（根据子状态高亮）
-    EPD_Dis_Part(DISP_HOUR_X,     DISP_HOUR_Y, NUM_image_arr[g_TimeSetCache.hour/10],      33, 64, 
-                 (g_TimeSetCache.sub_state == TIME_SET_HOUR) ? NEG : POS);
-    EPD_Dis_Part(DISP_HOUR_X+45,  DISP_HOUR_Y, NUM_image_arr[g_TimeSetCache.hour%10],      33, 64, 
-                 (g_TimeSetCache.sub_state == TIME_SET_HOUR) ? NEG : POS);
+    EPD_Dis_Part(DISP_HOUR_X,     DISP_HOUR_Y, NUM_image_arr[g_TimeSetCache.hour/10],      33, 64, (g_TimeSetCache.sub_state == TIME_SET_HOUR) ? NEG : POS);
+    EPD_Dis_Part(DISP_HOUR_X+45,  DISP_HOUR_Y, NUM_image_arr[g_TimeSetCache.hour%10],      33, 64, (g_TimeSetCache.sub_state == TIME_SET_HOUR) ? NEG : POS);
     
     // 冒号显示
     EPD_Dis_Part(DISP_DOT_X,      DISP_DOT_Y1, gImage_DOT,                   8,  8, POS);
     EPD_Dis_Part(DISP_DOT_X,      DISP_DOT_Y2, gImage_DOT,                   8,  8, POS);
     
     // 分钟显示（根据子状态高亮）
-    EPD_Dis_Part(DISP_MINUTE_X,   DISP_MINUTE_Y, NUM_image_arr[g_TimeSetCache.minute/10],  33, 64, 
-                 (g_TimeSetCache.sub_state == TIME_SET_MINUTE) ? NEG : POS);
-    EPD_Dis_Part(DISP_MINUTE_X+46,DISP_MINUTE_Y, NUM_image_arr[g_TimeSetCache.minute%10],  33, 64, 
-                 (g_TimeSetCache.sub_state == TIME_SET_MINUTE) ? NEG : POS);
+    EPD_Dis_Part(DISP_MINUTE_X,   DISP_MINUTE_Y, NUM_image_arr[g_TimeSetCache.minute/10],  33, 64, (g_TimeSetCache.sub_state == TIME_SET_MINUTE) ? NEG : POS);
+    EPD_Dis_Part(DISP_MINUTE_X+46,DISP_MINUTE_Y, NUM_image_arr[g_TimeSetCache.minute%10],  33, 64, (g_TimeSetCache.sub_state == TIME_SET_MINUTE) ? NEG : POS);
 
     EPD_Part_Update_and_DeepSleep();
 }
 
-// 重构后的菜单任务
+// 菜单任务
 static void Menu_Task(void *arg)
 {
     KeyAction_t recv_action;
@@ -455,8 +450,9 @@ static void Menu_Task(void *arg)
 
     // 初始化显示主菜单
     EPD_W21_Init();
-    EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-    EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+	EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,   32, 16,  NEG);
+	EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper,  32, 16,  POS);
+	EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set, 	 32, 16,  POS);	
     EPD_Part_Update_and_DeepSleep();
 
     while(1)
@@ -474,12 +470,13 @@ static void Menu_Task(void *arg)
 					case KEY1_CLICK:    
 						menu_main_id = (menu_main_id + 1) % 3; 
 						EPD_W21_Init();
+					    EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,32, 16, OFF);
 						EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16,  (menu_main_id == 0) ? NEG : POS);
 						EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper,  32, 16,  (menu_main_id == 1) ? NEG : POS);
 						EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set, 32, 16,  (menu_main_id == 2) ? NEG : POS);
 						EPD_Part_Update_and_DeepSleep();
 						break;
-
+				
 					case KEY2_CLICK:      
 						// KEY2单击：根据当前选中项，进入对应子菜单
 						switch(menu_main_id)
@@ -492,7 +489,10 @@ static void Menu_Task(void *arg)
 							case 1:  // 选中“图片切换”
 								xCurrentMenuState = MENU_STATE_PIC_SWITCH;
 								EPD_W21_Init();
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_ok,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
 								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
 								EPD_Part_Update_and_DeepSleep();
 								break;
 							case 2:  // 选中“设置页面”
@@ -526,26 +526,27 @@ static void Menu_Task(void *arg)
                 switch(recv_action)
                 {
                     case KEY2_CLICK:       // 切换图片
-						LED1_TOGGLE;
-						picture_id = (picture_id + 1) % 2; 
+						picture_id = (picture_id + 1) % 4; 
 //                        EPD_W21_Init();
                         EPD_HW_Init_4GRAY();  
                         EPD_WhiteScreen_ALL_4GRAY(Gray_image_arr[picture_id]); 
                         break;
                     case KEY1_CLICK:       // 返回主菜单
-						LED1_TOGGLE;
 						//恢复isClock=true，让时钟任务重启
 						xSemaphoreTake(xIsClockMutex, portMAX_DELAY);
 						isClock = true;
 						xSemaphoreGive(xIsClockMutex);
                         xCurrentMenuState = MENU_STATE_MAIN;
 					    // 加载背景图
+						EPD_W21_Init();
 						EPD_HW_Init(); 
 						EPD_SetRAMValue_BaseMap(gImage_base);  
 						driver_delay_xms(100);
                         EPD_W21_Init();
-                        EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                        EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+						EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_ok,   32, 16, OFF);
+                        EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
+                        EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, NEG);
+						EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                         EPD_Part_Update_and_DeepSleep();
                         break;
                     default:
@@ -553,14 +554,13 @@ static void Menu_Task(void *arg)
                 }
                 break;
 
-            // 时间设置子菜单（核心：按设置子状态处理按键）
+            // 时间设置子菜单
             case MENU_STATE_TIME_SET:
-//				EPD_W21_Init();
-//				EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, OFF);
-//				EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper,   32, 16, OFF);
-//				EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit, 32, 16, POS);
-//				EPD_Part_Update_and_DeepSleep();
-                // 第二步：按当前设置子状态分层处理按键
+				// 设置时间时，关闭时钟刷新
+				xSemaphoreTake(xIsClockMutex, portMAX_DELAY);
+				isClock = false;
+				xSemaphoreGive(xIsClockMutex);
+                
                 switch(g_TimeSetCache.sub_state)
                 {
                     // --------------------- 调整分钟状态 ---------------------
@@ -571,6 +571,12 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state = TIME_SET_HOUR;
                                 RefreshTimeSetDisplay();
                                 break;
+							
+                            case KEY1_DOUBLE:      
+                                g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+                                RefreshTimeSetDisplay();
+                                break;
+							
                             case KEY2_CLICK:       // 分钟+1（循环）
                                 g_TimeSetCache.minute = (g_TimeSetCache.minute + 1) % 60;
                                 RefreshTimeSetDisplay();
@@ -582,8 +588,10 @@ static void Menu_Task(void *arg)
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:
@@ -599,6 +607,10 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state =TIME_SET_WEEK;
                                 RefreshTimeSetDisplay();
                                 break;
+							case KEY1_DOUBLE:      
+                                g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+                                RefreshTimeSetDisplay();
+                                break;
                             case KEY2_CLICK:       // 小时+1（循环）
                                 g_TimeSetCache.hour = (g_TimeSetCache.hour + 1) % 24;
                                 RefreshTimeSetDisplay();
@@ -610,8 +622,10 @@ static void Menu_Task(void *arg)
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:
@@ -627,6 +641,10 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state =  TIME_SET_DATE;
                                 RefreshTimeSetDisplay();
                                 break;
+							case KEY1_DOUBLE:      
+                                g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+                                RefreshTimeSetDisplay();
+                                break;
                             case KEY2_CLICK:       // 星期+1（循环）
                                 g_TimeSetCache.week++;
                                 if(g_TimeSetCache.week > 6) g_TimeSetCache.week = 0;
@@ -640,8 +658,10 @@ static void Menu_Task(void *arg)
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:
@@ -657,11 +677,16 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state = TIME_SET_MONTH;
                                 RefreshTimeSetDisplay();
                                 break;
+							case KEY1_DOUBLE:      
+                                g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+                                RefreshTimeSetDisplay();
+                                break;
                             case KEY2_CLICK:       // 日期+1（循环）
                                 g_TimeSetCache.date++;
                                 if(g_TimeSetCache.date > 31) g_TimeSetCache.date = 1;
                                 RefreshTimeSetDisplay();
                                 break;
+							
                             case KEY2_DOUBLE:      // 日期-1（循环）
                                 g_TimeSetCache.date--;
                                 if(g_TimeSetCache.date < 1) g_TimeSetCache.date = 31;
@@ -670,8 +695,10 @@ static void Menu_Task(void *arg)
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:
@@ -687,6 +714,10 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state = TIME_SET_YEAR;
                                 RefreshTimeSetDisplay();
                                 break;
+							case KEY1_DOUBLE:      
+                                g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+                                RefreshTimeSetDisplay();
+                                break;
                             case KEY2_CLICK:       // 月份+1（循环）
                                 g_TimeSetCache.month++;
                                 if(g_TimeSetCache.month > 12) g_TimeSetCache.month = 1;
@@ -700,8 +731,10 @@ static void Menu_Task(void *arg)
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:
@@ -717,6 +750,10 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state = TIME_SET_SAVE_EXIT;
                                 RefreshTimeSetDisplay();
                                 break;
+							case KEY1_DOUBLE:      
+                                g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+                                RefreshTimeSetDisplay();
+                                break;
                             case KEY2_CLICK:       // 年份+1
                                 g_TimeSetCache.year = (g_TimeSetCache.year + 1) % 100;
                                 RefreshTimeSetDisplay();
@@ -728,8 +765,10 @@ static void Menu_Task(void *arg)
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:
@@ -747,7 +786,16 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state = TIME_SET_MINUTE;
                                 RefreshTimeSetDisplay();
                                 break;
+							case KEY1_DOUBLE:      
+                                g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+                                RefreshTimeSetDisplay();
+                                break;
                             case KEY2_CLICK:       // KEY2单击：确认保存并退出
+								//恢复isClock=true，让时钟任务重启
+								xSemaphoreTake(xIsClockMutex, portMAX_DELAY);
+								isClock = true;
+								xSemaphoreGive(xIsClockMutex);
+								xCurrentMenuState = MENU_STATE_MAIN;
                                 // 写入DS1302
                                 taskENTER_CRITICAL();
                                 Time[MINUTE] = g_TimeSetCache.minute;
@@ -770,16 +818,25 @@ static void Menu_Task(void *arg)
                                 
                                 // 恢复主菜单显示
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_TITLE_X, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_TITLE_X, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_ok,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             case KEY1_LONG:        // 取消保存并退出
+								//恢复isClock=true，让时钟任务重启
+								xSemaphoreTake(xIsClockMutex, portMAX_DELAY);
+								isClock = true;
+								xSemaphoreGive(xIsClockMutex);
+							
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 g_TimeSetCache.sub_state = TIME_SET_MINUTE;
                                 EPD_W21_Init();
-                                EPD_Dis_Part(DISP_MENU_TITLE_X, DISP_MENU_Y2, txt_time_set, 32, 16, POS);
-                                EPD_Dis_Part(DISP_MENU_TITLE_X, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
+								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, NEG);
+								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
+								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, POS);
                                 EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:

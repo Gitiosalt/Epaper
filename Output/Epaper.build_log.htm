@@ -34,15 +34,29 @@ compiling main.c...
   #define OFF 3 
 ..\..\User\ds1302\ds1302.h(89): warning:  #1-D: last line of file ends without a newline
   #endif
-..\..\User\main.c(810): warning:  #550-D: variable "xReturn"  was set but never used
+..\..\User\main.c(576): warning:  #188-D: enumerated type mixed with another type
+                                  g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+..\..\User\main.c(611): warning:  #188-D: enumerated type mixed with another type
+                                  g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+..\..\User\main.c(645): warning:  #188-D: enumerated type mixed with another type
+                                  g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+..\..\User\main.c(681): warning:  #188-D: enumerated type mixed with another type
+                                  g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+..\..\User\main.c(718): warning:  #188-D: enumerated type mixed with another type
+                                  g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+..\..\User\main.c(754): warning:  #188-D: enumerated type mixed with another type
+                                  g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+..\..\User\main.c(790): warning:  #188-D: enumerated type mixed with another type
+                                  g_TimeSetCache.sub_state = ((g_TimeSetCache.sub_state -1) < 0) ? TIME_SET_SAVE_EXIT:  (g_TimeSetCache.sub_state -1);
+..\..\User\main.c(867): warning:  #550-D: variable "xReturn"  was set but never used
       portBASE_TYPE xReturn = pdPASS;
-..\..\User\main.c(898): warning:  #1-D: last line of file ends without a newline
+..\..\User\main.c(955): warning:  #1-D: last line of file ends without a newline
   /*********************************************END OF FILE**********************/
-..\..\User\main.c: 5 warnings, 0 errors
+..\..\User\main.c: 12 warnings, 0 errors
 linking...
-Program Size: Code=23410 RO-data=56234 RW-data=340 ZI-data=10076  
+Program Size: Code=24402 RO-data=56234 RW-data=340 ZI-data=10076  
 FromELF: creating hex file...
-"..\..\Output\Epaper.axf" - 0 Error(s), 5 Warning(s).
+"..\..\Output\Epaper.axf" - 0 Error(s), 12 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -55,7 +69,7 @@ Package Vendor: Keil
   C:\Users\yjc\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.4.1\Device\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
