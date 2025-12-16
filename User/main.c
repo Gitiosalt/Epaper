@@ -617,6 +617,16 @@ static void Menu_Task(void *arg)
 
             // 时间设置子菜单
             case MENU_STATE_TIME_SET: 
+				taskENTER_CRITICAL();
+				DS1302_GetTime();
+				g_TimeSetCache.minute = Time[MINUTE];
+				g_TimeSetCache.hour = Time[HOUR];
+				g_TimeSetCache.date = Time[DATE];
+				g_TimeSetCache.month = Time[MONTH];
+				g_TimeSetCache.year = Time[YEAR];
+				g_TimeSetCache.week = Time[WEEK];
+				g_TimeSetCache.sub_state = TIME_SET_MINUTE; // 默认先调整分钟
+				taskEXIT_CRITICAL();
                 switch(g_TimeSetCache.sub_state)
                 {
                     // --------------------- 调整分钟状态 ---------------------
@@ -643,12 +653,7 @@ static void Menu_Task(void *arg)
                                 break;
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
-                                EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
+								ClearTimeDisplay();
                                 break;
                             default:
                                 break;
@@ -677,12 +682,8 @@ static void Menu_Task(void *arg)
                                 break;
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
+								ClearTimeDisplay();
                                 EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
                                 break;
                             default:
                                 break;
@@ -713,12 +714,7 @@ static void Menu_Task(void *arg)
                                 break;
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
-                                EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
+								ClearTimeDisplay();
                                 break;
                             default:
                                 break;
@@ -750,12 +746,7 @@ static void Menu_Task(void *arg)
                                 break;
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
-                                EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
+								ClearTimeDisplay();
                                 break;
                             default:
                                 break;
@@ -786,12 +777,7 @@ static void Menu_Task(void *arg)
                                 break;
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
-                                EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
+								ClearTimeDisplay();
                                 break;
                             default:
                                 break;
@@ -820,12 +806,7 @@ static void Menu_Task(void *arg)
                                 break;
                             case KEY1_LONG:        // 取消设置，返回主菜单
                                 xCurrentMenuState = MENU_STATE_MAIN;
-                                EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
+								ClearTimeDisplay();
                                 break;
                             default:
                                 break;
@@ -859,7 +840,8 @@ static void Menu_Task(void *arg)
                                 Time[SECOND] = 0;
                                 DS1302_SetTime();
                                 taskEXIT_CRITICAL();
-
+								
+								
                                 // 显示保存成功并返回主菜单
                                 EPD_W21_Init();
                                 EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_ok, 32, 16, NEG);
@@ -869,22 +851,12 @@ static void Menu_Task(void *arg)
                                 g_TimeSetCache.sub_state = TIME_SET_MINUTE; // 重置子状态
                                 
                                 // 恢复主菜单显示
-                                EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
+								ClearTimeDisplay();
                                 break;
                             case KEY1_LONG:        // 取消保存并退出
                                 xCurrentMenuState = MENU_STATE_MAIN;
                                 g_TimeSetCache.sub_state = TIME_SET_MINUTE;
-                                EPD_W21_Init();
-								EPD_Dis_Part(DISP_MENU_X1, DISP_MENU_Y1, txt_save_exit,   32, 16, OFF);
-								EPD_Dis_Part(DISP_MENU_X2, DISP_MENU_Y2, txt_time_set,  32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X3, DISP_MENU_Y3, txt_wallpaper, 32, 16, POS);
-								EPD_Dis_Part(DISP_MENU_X4, DISP_MENU_Y4, txt_boot_set,  32, 16, NEG);
-                                EPD_Part_Update_and_DeepSleep();
+								ClearTimeDisplay();
                                 break;
                             default:
                                 break;
