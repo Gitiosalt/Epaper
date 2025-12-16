@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\..\Output\Epaper.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\..\Output\Epaper.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Dec 16 12:49:51 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Dec 16 16:27:02 2025
 <BR><P>
 <H3>Maximum Stack Usage =        320 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -480,7 +480,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[35]"></a>main</STRONG> (Thumb, 270 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[35]"></a>main</STRONG> (Thumb, 258 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 216<LI>Call Chain = main &rArr; xQueueCreateMutex &rArr; prvInitialiseMutex &rArr; xQueueGenericSend &rArr; prvUnlockQueue &rArr; prvNotifyQueueSetContainer &rArr; prvCopyDataToQueue &rArr; xTaskPriorityDisinherit &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[62]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskCreate
@@ -626,7 +626,7 @@ Global Symbols
 <LI><a href="#[5e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPD_HW_Init
 <LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Menu_Task
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ClearTimeDisplay
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeSetDisplay
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeDisplay
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Clock_Task
 </UL>
 
@@ -718,7 +718,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Menu_Task
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ClearTimeDisplay
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeSetDisplay
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeDisplay
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Clock_Task
 </UL>
 
@@ -742,7 +742,7 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Menu_Task
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ClearTimeDisplay
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeSetDisplay
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeDisplay
 <LI><a href="#[38]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Clock_Task
 </UL>
 
@@ -1807,8 +1807,8 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[36]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemInit
 </UL>
 
-<P><STRONG><a name="[38]"></a>Clock_Task</STRONG> (Thumb, 782 bytes, Stack size 16 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = Clock_Task &rArr; xQueueGenericSend &rArr; prvUnlockQueue &rArr; prvNotifyQueueSetContainer &rArr; prvCopyDataToQueue &rArr; xTaskPriorityDisinherit &rArr; __2printf
+<P><STRONG><a name="[38]"></a>Clock_Task</STRONG> (Thumb, 788 bytes, Stack size 24 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 192<LI>Call Chain = Clock_Task &rArr; xQueueGenericSend &rArr; prvUnlockQueue &rArr; prvNotifyQueueSetContainer &rArr; prvCopyDataToQueue &rArr; xTaskPriorityDisinherit &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xTaskGetTickCount
 <LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
@@ -1831,8 +1831,8 @@ Local Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
-<P><STRONG><a name="[5a]"></a>RefreshTimeSetDisplay</STRONG> (Thumb, 918 bytes, Stack size 16 bytes, main.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = RefreshTimeSetDisplay &rArr; EPD_Dis_Part &rArr; Epaper_Write_Data &rArr; Epaper_Spi_WriteByte
+<P><STRONG><a name="[5a]"></a>RefreshTimeDisplay</STRONG> (Thumb, 948 bytes, Stack size 16 bytes, main.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = RefreshTimeDisplay &rArr; EPD_Dis_Part &rArr; Epaper_Write_Data &rArr; Epaper_Spi_WriteByte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPD_W21_Init
 <LI><a href="#[58]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPD_Part_Update_and_DeepSleep
@@ -1841,7 +1841,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Menu_Task
 </UL>
 
-<P><STRONG><a name="[5b]"></a>ClearTimeDisplay</STRONG> (Thumb, 898 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[5b]"></a>ClearTimeDisplay</STRONG> (Thumb, 956 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = ClearTimeDisplay &rArr; EPD_Dis_Part &rArr; Epaper_Write_Data &rArr; Epaper_Spi_WriteByte
 </UL>
 <BR>[Calls]<UL><LI><a href="#[56]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EPD_W21_Init
@@ -1851,7 +1851,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[3b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Menu_Task
 </UL>
 
-<P><STRONG><a name="[3b]"></a>Menu_Task</STRONG> (Thumb, 1944 bytes, Stack size 16 bytes, main.o(.text))
+<P><STRONG><a name="[3b]"></a>Menu_Task</STRONG> (Thumb, 1896 bytes, Stack size 16 bytes, main.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = Menu_Task &rArr; xQueueGenericSend &rArr; prvUnlockQueue &rArr; prvNotifyQueueSetContainer &rArr; prvCopyDataToQueue &rArr; xTaskPriorityDisinherit &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[55]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueueGenericSend
@@ -1870,7 +1870,7 @@ Local Symbols
 <LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DS1302_SetTime
 <LI><a href="#[51]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DS1302_GetTime
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ClearTimeDisplay
-<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeSetDisplay
+<LI><a href="#[5a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RefreshTimeDisplay
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> main.o(.text)
 </UL>
